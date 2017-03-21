@@ -42,7 +42,7 @@ module Serverspec
 
           def root_volume
             root_vol = @image.block_device_mappings.first { |vol| vol.device_name == @image.root_device_name }
-            return RootVolume.new(root_vol,@image.root_device_type)
+            return Volume.new(root_vol,@image.root_device_type)
           end
 
           def image_id
@@ -76,7 +76,7 @@ module Serverspec
 
         end
 
-        class RootVolume < Base
+        class Volume < Base
           def initialize(vol,volume_type)
             @volume = vol
             @type = volume_type
