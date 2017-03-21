@@ -42,7 +42,7 @@ module Serverspec
 
           def root_volume
             root_vol = @image.block_device_mappings.first { |vol| vol.device_name == @image.root_device_name }
-            return RootVolume.new(root_vol)
+            return RootVolume.new(root_vol,@image.root_device_type)
           end
 
           def image_id
@@ -77,8 +77,9 @@ module Serverspec
         end
 
         class RootVolume < Base
-          def initialize(vol)
+          def initialize(vol,volume_type)
             @volume = vol
+            @type = volume_type
           end
 
           def encrypted?
@@ -94,9 +95,7 @@ module Serverspec
           end
 
           def type
-            if @volume.ebs
-              'ebs'
-            end
+            @type
           end
 
           # Returns the string representation of EC2::RootVolume
