@@ -1,14 +1,10 @@
-# encoding: utf-8
-
 module Serverspec
   module Type
     module AWS
       # The EC2 module contains the EC2 API resources
       module EC2
         # The Instance class exposes the EC2::Image resources
-        class Image < Base # rubocop:disable ClassLength
-
-
+        class Image < Base
           # The ID of the Instance
           attr_reader :instance_id
           # The Name tag of the Instance (if available)
@@ -41,17 +37,15 @@ module Serverspec
           end
 
           def root_volume
-            root_vol = @image.block_device_mappings.first { |vol| vol.device_name == @image.root_device_name }
-            return Volume.new(root_vol,@image.root_device_type)
+            root_vol = @image.block_device_mappings.first do |vol|
+              vol.device_name == @image.root_device_name
+            end
+            Volume.new(root_vol, @image.root_device_type)
           end
 
-          def image_id
-            return @image_id
-          end
+          attr_reader :image_id
 
-          def image_name
-            return @image_name
-          end
+          attr_reader :image_name
 
           private
 
@@ -59,7 +53,7 @@ module Serverspec
           def get_image_by_id(id)
             results = @aws.describe_images(image_ids: [id])
             @image = results.images[0]
-            @image_name=@image.name
+            @image_name = @image.name
           end
 
           # @private
@@ -71,37 +65,36 @@ module Serverspec
               ]
             ).images[0]
             @image_id = @image.image_id
-            @image_name=@image.name
+            @image_name = @image.name
           end
-
         end
 
+        # The Volume class exposes the image root volume
+        # as Aws::EC2::Types::BlockDeviceMapping
         class Volume < Base
-          def initialize(vol,volume_type)
+          def initialize(vol, volume_type)
             @volume = vol
             @type = volume_type
           end
 
           def encrypted?
-            return @volume.ebs.encrypted
+            @volume.ebs.encrypted
           end
 
           def snapshot_id
-            return @volume.ebs.snapshot_id
+            @volume.ebs.snapshot_id
           end
 
           def device_name
-            return @volume.device_name
+            @volume.device_name
           end
 
-          def type
-            @type
-          end
+          attr_reader :type
 
           # Returns the string representation of EC2::RootVolume
           # @return [String]
           def to_s
-            return "EC2 Image Root Volume: #{@volume.ebs.snapshot_id}"
+            "EC2 Image Root Volume: #{@volume.ebs.snapshot_id}"
           end
         end
       end

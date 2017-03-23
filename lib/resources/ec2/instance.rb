@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 module Serverspec
   module Type
     module AWS
@@ -50,7 +48,7 @@ module Serverspec
 
           # Returns true if the platform is Windows
           def on_windows?
-            @instance.platform.downcase == 'windows'
+            @instance.platform.casecmp('windows').zero?
           end
 
           # Specifies whether the Instance launched in a VPC is able to perform
